@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/api/:match*",
-      "destination": "https://api.clashroyale.com/v1/:match*"
-    }
-  ]
-}
