@@ -1,0 +1,19 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: #a9a9a9;
+  border-radius: 20px;
+}
+.card:hover {
+  box-shadow: 0.3em 0.3em 1em rgba(209, 243, 40, 0.673);
+}
+.card-name {
+  font-size: 1.5rem;
+  align-self: center;
+}
+
+.card img {
+  width: 90%;
+  height: auto;
+  align-self: center;
+}
