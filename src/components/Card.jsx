@@ -1,9 +1,9 @@
-import './Card.css'
-export default function Card({ name, iconUrl, onClick}){
+import "./Card.css";
+export default function Card({ name, image, onClick }) {
   return (
     <div className="card" data-name={name} onClick={onClick}>
-      <img src={iconUrl} alt={name} />
+      <img src={image} alt={name} />
       <div className="card-name">{name}</div>
     </div>
-  )
+  );
 }

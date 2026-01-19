@@ -1,7 +1,5 @@
 import "./App.css";
 import Card from "./components/Card";
-
-import clashData from "../mock-data.json";
 import { useEffect, useState } from "react";
 
 function shuffle(cards) {
@@ -17,42 +15,78 @@ function shuffle(cards) {
 
 function App() {
   const [score, setScore] = useState(0);
-  const cards = [];
-  for (let i = 0; i < 20; i++) {
-    cards.push({
-      id: clashData.items[i].id,
-      name: clashData.items[i].name,
-      iconUrl: clashData.items[i].iconUrls.medium,
-    });
-  }
-  const shuffleCards = shuffle(cards);
+  const [bestScore, setBestScore] = useState(0);
+  const [cards, setCards] = useState(null);
+  const [clickedCards, setClickedCards] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+    const fetchData = async () => {
+      const response = await fetch(
+        "https://rickandmortyapi.com/api/character/?name=rick&status=alive",
+      );
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const { results } = await response.json();
+      let arr = [];
+      for (let i = 0; i < 20; i++) {
+        arr.push({
+          id: results[i].id,
+          image: results[i].image,
+          name: results[i].name,
+        });
+      }
+      if (active) {
+        setCards(shuffle(arr));
+      }
+    };
+    fetchData();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let best = localStorage.getItem("best-score");
+    if (!best) {
+      best = 0;
+      return localStorage.setItem("best-score", best);
+    }
+  }, []);
 
   function handleClick(e) {
     const { name } = e.currentTarget.dataset;
-    console.log(name);
-    console.log(clickedCards);
     if (!clickedCards.includes(name)) {
-      clickedCards.push(name);
       setScore(score + 1);
-      return console.log("game continue");
+      setClickedCards([...clickedCards, name]);
+      setCards(shuffle(cards));
+      if (score >= bestScore) {
+        setBestScore(score);
+        localStorage.setItem("best-score", score);
+      }
     } else {
       setScore(0);
-      return alert("game over");
+      setClickedCards([]);
+      setCards(shuffle(cards));
     }
   }
 
-  console.log(score);
   return (
     <>
       <header>
         Get points by clicking on an image but don't click on any more than
         once!
       </header>
-      <div className="score-display">{score}</div>
+      <div className="score-display score">score:{score}</div>
+      <div className="score-display">best score:{bestScore}</div>
       <div className="card-container">
-        {shuffleCards.map((card) => (
-          <Card key={card.id} {...card} onClick={handleClick}></Card>
-        ))}
+        {cards &&
+          cards.map((card) => (
+            <Card key={card.id} {...card} onClick={handleClick}></Card>
+          ))}
+        {!cards && <h1>loading...</h1>}
       </div>
     </>
   );
