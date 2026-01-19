@@ -1,7 +1,8 @@
 import "./App.css";
 import Card from "./components/Card";
 import { useEffect, useState } from "react";
-
+import winAudio from "../public/win.mp3";
+import loseAudio from "../public/lose.mp3";
 function shuffle(cards) {
   let result = [...cards];
   let m = result.length,
@@ -18,7 +19,8 @@ function App() {
   const [bestScore, setBestScore] = useState(0);
   const [cards, setCards] = useState(null);
   const [clickedCards, setClickedCards] = useState([]);
-
+  const win = new Audio(winAudio);
+  const lose = new Audio(loseAudio);
   useEffect(() => {
     let active = true;
     const fetchData = async () => {
@@ -59,6 +61,7 @@ function App() {
   function handleClick(e) {
     const { name } = e.currentTarget.dataset;
     if (!clickedCards.includes(name)) {
+      win.play();
       setScore(score + 1);
       setClickedCards([...clickedCards, name]);
       setCards(shuffle(cards));
@@ -67,6 +70,7 @@ function App() {
         localStorage.setItem("best-score", score);
       }
     } else {
+      lose.play();
       setScore(0);
       setClickedCards([]);
       setCards(shuffle(cards));
