@@ -1,8 +1,8 @@
 import "./App.css";
 import Card from "./components/Card";
-import { useEffect, useState } from "react";
-import winAudio from "../public/win.mp3";
-import loseAudio from "../public/lose.mp3";
+import { useEffect, useRef, useState } from "react";
+import winAudio from "./assets/win.mp3";
+import loseAudio from "./assets/lose.mp3";
 function shuffle(cards) {
   let result = [...cards];
   let m = result.length,
@@ -16,11 +16,15 @@ function shuffle(cards) {
 
 function App() {
   const [score, setScore] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
+  const [bestScore, setBestScore] = useState(() => {
+    return parseInt(localStorage.getItem("best-score")) || 0;
+  });
   const [cards, setCards] = useState(null);
   const [clickedCards, setClickedCards] = useState([]);
-  const win = new Audio(winAudio);
-  const lose = new Audio(loseAudio);
+  const [gameWon, setGameWon] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const win = useRef(new Audio(winAudio));
+  const lose = useRef(new Audio(loseAudio));
   useEffect(() => {
     let active = true;
     const fetchData = async () => {
@@ -32,16 +36,15 @@ function App() {
         throw new Error(`Response status: ${response.status}`);
       }
       const { results } = await response.json();
-      let arr = [];
-      for (let i = 0; i < 20; i++) {
-        arr.push({
-          id: results[i].id,
-          image: results[i].image,
-          name: results[i].name,
-        });
-      }
+      const safeResults = results.slice(0, 20).map((result) => {
+        return {
+          id: result.id,
+          image: result.image,
+          name: result.name,
+        };
+      });
       if (active) {
-        setCards(shuffle(arr));
+        setCards(shuffle(safeResults));
       }
     };
     fetchData();
@@ -50,31 +53,38 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    let best = localStorage.getItem("best-score");
-    if (!best) {
-      best = 0;
-      return localStorage.setItem("best-score", best);
-    }
-  }, []);
-
   function handleClick(e) {
+    if (gameOver || gameWon) return;
     const { name } = e.currentTarget.dataset;
     if (!clickedCards.includes(name)) {
+      win.currentTime = 0;
       win.play();
-      setScore(score + 1);
+      let newScore = score + 1;
+      setScore(newScore);
       setClickedCards([...clickedCards, name]);
       setCards(shuffle(cards));
-      if (score >= bestScore) {
-        setBestScore(score);
-        localStorage.setItem("best-score", score);
+      if (newScore > bestScore) {
+        setBestScore(newScore);
+        localStorage.setItem("best-score", newScore);
+      }
+      if (newScore === cards.length) {
+        setGameWon(true);
+      } else {
+        setCards(shuffle(cards));
       }
     } else {
+      lose.currentTime = 0;
       lose.play();
-      setScore(0);
-      setClickedCards([]);
-      setCards(shuffle(cards));
+      setGameOver(true);
     }
+  }
+
+  function restartGame() {
+    setScore(0);
+    setClickedCards([]);
+    setGameOver(false);
+    setGameWon(false);
+    setCards(shuffle(cards));
   }
 
   return (
@@ -92,6 +102,12 @@ function App() {
           ))}
         {!cards && <h1>loading...</h1>}
       </div>
+      {(gameOver || gameWon) && (
+        <div className="game-over-modal">
+          <h2>{gameWon ? "You Win!" : "Game Over"}</h2>
+          <button onClick={restartGame}>Play Again</button>
+        </div>
+      )}
     </>
   );
 }
