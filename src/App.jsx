@@ -57,8 +57,8 @@ function App() {
     if (gameOver || gameWon) return;
     const { name } = e.currentTarget.dataset;
     if (!clickedCards.includes(name)) {
-      win.currentTime = 0;
-      win.play();
+      win.current.currentTime = 0;
+      win.current.play();
       let newScore = score + 1;
       setScore(newScore);
       setClickedCards([...clickedCards, name]);
@@ -73,8 +73,8 @@ function App() {
         setCards(shuffle(cards));
       }
     } else {
-      lose.currentTime = 0;
-      lose.play();
+      lose.current.currentTime = 0;
+      lose.current.play();
       setGameOver(true);
     }
   }

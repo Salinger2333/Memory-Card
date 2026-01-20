@@ -1,16 +1,16 @@
 header {
-  margin-top: 50px ;
+  margin-top: 50px;
   text-align: center;
   font-size: 1.5rem;
-  color:#c0c0c0;
+  color: #c0c0c0;
 }
 .score-display {
   font-size: xx-large;
   text-align: center;
   margin-bottom: 50px;
-  color:#c0c0c0;
+  color: #c0c0c0;
 }
-.score-display.score{
+.score-display.score {
   margin-bottom: 0;
 }
 .card-container {
@@ -23,4 +23,84 @@ header {
 .card-container h1 {
   width: 100%;
   text-align: center;
+}
+body {
+  position: relative;
+}
+
+.game-over-modal {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.game-over-modal h2 {
+  font-size: 3rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.4s ease-out;
+}
+
+.game-over-modal button {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #353535;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  animation: slideUp 0.4s ease-out 0.1s backwards;
+}
+
+.game-over-modal button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.game-over-modal button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
